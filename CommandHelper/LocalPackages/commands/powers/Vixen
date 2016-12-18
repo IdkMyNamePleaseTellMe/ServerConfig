@@ -1,0 +1,264 @@
+    run0:/run 0 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()    
+    }
+    sudo(/effectplayer() 1 0 )
+   <<<
+    run1:/run 1 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()
+    }
+    sudo(/effect player() 1 0)
+    sudo(/effect player() 1 9999 1 true)
+<<<
+    run2:/run 2 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()
+    }
+    sudo(/effect player() 1 0)
+    sudo(/effect player() 1 9999 2 true)
+<<<  
+    run3:/run 3 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()
+    }
+    sudo(/effect player() 1 0)
+    sudo(/effect player() 1 9999 3 true)
+<<<   
+    run4:/run 4 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()
+    }
+    sudo(/effect player() 1 0)
+    sudo(/effect player() 1 9999 5 true)
+<<<
+    run5:/run 5 = >>>
+    if(get_value(player()."speedEffects") == "true"){
+        tmsg(player(), color(red)."Your speed is currently locked")
+        die()
+    }
+    sudo(/effect player() 1 0)
+    sudo(/effect player() 1 9999 8 true)
+<<<
+websling:/websling = >>>
+  
+    assign(@cooldown, 1)
+  
+    if(is_null(get_value('lastwebshot')),
+        store_value('lastwebshot',0)
+    )
+
+    @pworld = pworld()
+    if(
+        @pworld != '1_9' &&
+        @pworld != 'greenfield' &&
+        @pworld != 'citybreak'
+    ){
+        die()
+    }
+
+    assign(@lastshot, get_value('lastwebshot'))
+    if(@lastshot + @cooldown > time() / 1000,
+        die()
+    )
+    store_value('lastwebshot', time() / 1000)
+  
+    @multiplier = 0.5
+    @arrow = shoot_projectile(player(), 'ARROW')
+    @velocity = entity_velocity(@arrow)
+    
+    # spawn pig
+    @ploc = ploc()
+    @ploc['y']  = @ploc['y'] + 1
+    @pig = spawn_entity("CHICKEN", 1, @ploc)[0]
+    
+    try(set_mob_effect(@pig, 14, 1, 9999, true, false),
+        tmsg(player(), "Sorry, you can't use websling in here")
+        entity_remove(@arrow)
+        die()
+    )
+    
+    # set pig invisible
+    
+    set_mob_effect(@pig, 11, 254, 9999, true, false)
+    
+    # sit player on pig
+    set_entity_rider(@pig, puuid(player(),true))
+    
+    set_leashholder(@pig,@arrow)
+    
+    set_entity_velocity(@arrow, array(@velocity['x'] * @multiplier, @velocity['y'] * @multiplier, @velocity['z'] * @multiplier))
+
+    
+bind(projectile_hit, associative_array('id': 'webshot'.@arrow), null, @event, 
+    @arrow, @pig, @player = player()) {
+    
+        set_timeout(5000, closure(){
+            entity_remove(@pig)
+            entity_remove(@arrow)
+        });
+        unbind()
+}
+    
+<<<
+jump0:/jump 0 = >>>
+    sudo(/effect player() 8 0)
+<<<
+jump1:/jump 1 = >>>
+    sudo(/effect player() 8 0)
+    sudo(/effect player() 8 9999 1 true)
+<<<
+jump2:/jump 2 = >>>
+    sudo(/effect player() 8 0)
+    sudo(/effect player() 8 9999 3 true)
+<<<
+jump3:/jump 3 = >>>
+    sudo(/effect player() 8 0)
+    sudo(/effect player() 8 9999 5 true)
+<<<
+jump4:/jump 4 = >>>
+    sudo(/effect player() 8 0)
+    sudo(/effect player() 8 9999 10 true)
+<<<
+haste0:/haste 0 = >>>
+    sudo(/effect player() 3 0)
+<<<
+haste1:/haste 1 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 1 true)
+<<<
+haste2:/haste 2 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 3 true)
+<<<
+haste3:/haste 3 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 5 true)
+<<<
+haste4:/haste 4 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 10 true)
+<<<
+haste5:/haste 5 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 20 true)
+<<<
+haste6:/haste 6 = >>>
+    sudo(/effect player() 3 0)
+    sudo(/effect player() 3 9999 30 true)
+<<<carryplayer:/carryplayer $plr = >>>
+    
+    @plr = player()
+    @vic = $plr
+
+    @ploc = ploc()
+    @vicLoc = ploc(@vic)
+    
+    @players = players_in_radius(@ploc,2)
+    
+    if(@ploc['world'] != @vicLoc['world']){
+        die("Sorry, you have to be in the same world as that person!")
+    }
+
+    @x1 = @ploc['x']
+    @y1 = @ploc['y']
+    @z1 = @ploc['z']
+
+    @x2 = @vicLoc['x']
+    @y2 = @vicLoc['y']
+    @z2 = @vicLoc['z']
+
+    @x3 = pow(@x1 - @x2, 2)
+    @y3 = pow(@y1 - @y2, 2)
+    @z3 = pow(@z1 - @z2, 2)
+
+    @final = @x3 + @y3 + @z3
+
+    @distance = sqrt(@final)
+   
+    if(@distance > 2){
+        tmsg(@plr, "Make sure you are close enough to grab that person!")
+        die()
+    }
+
+    set_entity_rider(puuid(@plr,true),puuid(@vic,true))
+    tmsg(@vic, @plr." grabbed you")
+    tmsg(@plr, "You grabbed ".@vic."!")
+        
+<<<
+
+dismoutplayer:/dismountplayer = >>>
+   
+   @rider = get_entity_rider(puuid(player()))
+
+    if(@rider != null){
+        set_entity_rider(null,@rider)
+    }
+
+<<<mortal:/mortal = >>>
+    @plr = player()
+    runas(~console,"/sudo @plr c:/trailsid none")
+    runas(~console,"/pex user @plr group set mortal")
+    runas(~console,"/warp city @plr")
+    
+    set_timeout(2000, closure(
+        runas(~console,"/gamemode survival @plr")
+        runas(~console,"/minecraft:clear @plr")
+        runas(~console,"/effect @plr clear")
+        runas(~console,"/fly @plr off")
+        runas(~console,"/god @plr off")
+        runas(~console,"/pex reload")
+        runas(~console,"/undisguiseplayer @plr")
+    ))
+<<< "/effect ". @plr ." 5 9999 6 true",
+                "/effect ". @plr ." 13 9999 1 true",
+                "/effect ". @plr ." 21 9999 14 true",bind(player_toggle_sneak,null,null,@event){
+    @player = player()
+    @class = pgroup()[0]
+    
+    if(has_permission(@player, "powers.wallclimb")){
+        @eventID = associative_array('id': @player.'climbwalls')
+        @isSneaking = @event['sneaking']
+        
+        if(@isSneaking){
+        
+            include('/home/minecraft/server/plugins/CommandHelper/includes/wallClimb.ms')
+            @blocksChanged = _spidermanVinePlacement(ploc(),"106",@player)
+            export(@player."blocksChanged",@blocksChanged)
+        
+            @realID = bind(player_move, @eventID, associative_array('player': @player), @event,
+            @player, @eventID, @isSneaking){
+                
+                @blocksChanged = import(@player."blocksChanged")
+                foreach(@val in @blocksChanged){
+                    psend_block_change(@val,"0:0")
+                }
+
+                @blocksChanged = _spidermanVinePlacement(ploc(),"106",@player)
+                export(@player."blocksChanged",@blocksChanged)
+            }
+            export(@eventID['id'],@realID)
+        }else{
+            unbind(import(@eventID['id']))
+            @blocksChanged = import(@player."blocksChanged")
+            foreach(@val in @blocksChanged){
+                psend_block_change(@val,"0:0")
+            }
+        }
+    
+    }
+}hoveron:/hover on = >>>
+    sudo(/effect player() 25 9999 255 true)
+    tmsg(player(),concat(color(gold),
+    'You feel lighter than a feather..'))
+<<<
+hoveroff:/hover off = >>>
+    sudo(/effect player() 25 0)
+    tmsg(player(),concat(color(gold),
+    'Your gravity returns.'))
+<<<
