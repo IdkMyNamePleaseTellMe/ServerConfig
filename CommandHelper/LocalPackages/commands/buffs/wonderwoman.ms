@@ -21,6 +21,7 @@
                 "/back (In the speedforce)",
                 "/tp <player> (In the speedforce)",
                 "/speedforceteleport <playername>",
+                "/lightning",
                 "/cast forcefield",
                 "/cast wwbracers",
                 "/msg <playername>",
